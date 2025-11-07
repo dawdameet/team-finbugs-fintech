@@ -200,7 +200,7 @@ extern "C" double run_backtest(int lookback_window,
         else if (position == 1 && spread >= mean) {
             // We were long, now exit
             double exitPrice = spread;
-            double tradePnl = ( entryPrice - exitPrice) / entryPrice; // PnL as %
+            double tradePnl = (entryPrice - exitPrice) / entryPrice; // PnL as %
             pnl += tradePnl;
             std::cout << "Day " << i << ": EXIT LONG at " << exitPrice
                       << " | Trade PnL: " << (tradePnl * 100.0) << "%\n";
