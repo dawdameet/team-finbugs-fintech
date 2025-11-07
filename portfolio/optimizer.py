@@ -309,7 +309,7 @@ class AIPortfolioOptimizer:
         # Portfolio returns
         portfolio_returns = (self.returns * self.optimal_weights).sum(axis=1)
         
-        var_historical = np.percentile(portfolio_returns, confidence_level*100)
+        var_historical = np.percentile(portfolio_returns, (confidence_level)*100)
         
         var_amount = self.investment_amount * var_historical * np.sqrt(time_horizon)
         
