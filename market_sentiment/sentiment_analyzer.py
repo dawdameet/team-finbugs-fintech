@@ -128,7 +128,7 @@ class MarketSentimentAnalyzer:
             cleaned = self.clean_text(text)
             words = word_tokenize(cleaned)
             
-            all_words.extend([w for w in words if w in stop_words and len(w) > 3])
+            all_words.extend([w for w in words if w not in stop_words and len(w) > 3])
         
         return Counter(all_words).most_common(top_n)
     
