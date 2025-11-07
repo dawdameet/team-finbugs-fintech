@@ -184,13 +184,13 @@ extern "C" double run_backtest(int lookback_window,
             // It will buy when the spread is high and sell when it's low.
             if (spread < lowerBound) {
                 // Spread is too cheap. Let's... short it?
-                position = -1;
+                position = 1;
                 entryPrice = spread; // We enter at the current spread
                 std::cout << "Day " << i << ": LONG  Spread at " << spread
                           << " (Mean=" << mean << ", Lower=" << lowerBound << ")\n";
             } else if (spread > upperBound) {
                 // Spread is too expensive. Let's... long it?
-                position = 1;
+                position = -1;
                 entryPrice = spread;
                 std::cout << "Day " << i << ": SHORT Spread at " << spread
                           << " (Mean=" << mean << ", Upper=" << upperBound << ")\n";
