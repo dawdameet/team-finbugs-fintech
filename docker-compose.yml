@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: finbugs-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://finbugs:finbugs@db:5432/finbugs
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - finbugs-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: finbugs-db
+    environment:
+      - POSTGRES_USER=finbugs
+      - POSTGRES_PASSWORD=finbugs
+      - POSTGRES_DB=finbugs
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - finbugs-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: finbugs-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - finbugs-network
+
+  worker:
+    build: .
+    container_name: finbugs-worker
+    command: celery -A tasks worker --loglevel=info
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=postgresql://finbugs:finbugs@db:5432/finbugs
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - finbugs-network
+
+volumes:
+  postgres_data:
+
+networks:
+  finbugs-network:
+    driver: bridge
