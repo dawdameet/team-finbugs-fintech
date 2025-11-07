@@ -69,7 +69,6 @@ models/
 *.out
 *.exe
 a.out
-monte_carlo
 backtest
 
 # OS
