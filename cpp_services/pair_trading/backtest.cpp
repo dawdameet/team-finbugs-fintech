@@ -165,12 +165,23 @@ extern "C" double run_backtest(int lookback_window,
 
         if (position == 0) {
             if (spread < lowerBound) {
+<<<<<<< HEAD
                 position = -1;
                 entryPrice = spread;
                 std::cout << "Day " << i << ": LONG  Spread at " << spread
                           << " (Mean=" << mean << ", Lower=" << lowerBound << ")\n";
             } else if (spread > upperBound) {
                 position = 1;
+=======
+                // Spread is too cheap. Let's... short it?
+                position = 1;
+                entryPrice = spread; // We enter at the current spread
+                std::cout << "Day " << i << ": LONG  Spread at " << spread
+                          << " (Mean=" << mean << ", Lower=" << lowerBound << ")\n";
+            } else if (spread > upperBound) {
+                // Spread is too expensive. Let's... long it?
+                position = -1;
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
                 entryPrice = spread;
                 std::cout << "Day " << i << ": SHORT Spread at " << spread
                           << " (Mean=" << mean << ", Upper=" << upperBound << ")\n";
@@ -178,7 +189,11 @@ extern "C" double run_backtest(int lookback_window,
         }
         else if (position == 1 && spread >= mean) {
             double exitPrice = spread;
+<<<<<<< HEAD
             double tradePnl = (entryPrice - exitPrice) / entryPrice;
+=======
+            double tradePnl = (entryPrice - exitPrice) / entryPrice; // PnL as %
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
             pnl += tradePnl;
             std::cout << "Day " << i << ": EXIT LONG at " << exitPrice
                       << " | Trade PnL: " << (tradePnl * 100.0) << "%\n";

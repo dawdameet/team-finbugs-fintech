@@ -89,7 +89,7 @@ class MarketSentimentAnalyzer:
         scores = self.vader.polarity_scores(text)
         compound = scores['compound']
         
-        if compound >= 0.5:
+        if compound >= 0.05:
             sentiment = 'positive'
         elif compound <= -0.05:
             sentiment = 'negative'
@@ -110,7 +110,12 @@ class MarketSentimentAnalyzer:
         text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
         # Remove user mentions and hashtags
         text = re.sub(r'@\w+|#\w+', '', text)
+<<<<<<< HEAD
         text = re.sub(r'[^A-Za-z]', '', text)
+=======
+        
+        text = re.sub(r'[^A-Za-z]\\s', '', text)
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
         
         text = text.lower()
         text = text.lower()
@@ -126,7 +131,12 @@ class MarketSentimentAnalyzer:
         for text in texts:
             cleaned = self.clean_text(text)
             words = word_tokenize(cleaned)
+<<<<<<< HEAD
             all_words.extend([w for w in words if w in stop_words and len(w) > 3])
+=======
+            
+            all_words.extend([w for w in words if w not in stop_words and len(w) > 3])
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
         
         return Counter(all_words).most_common(top_n)
     
@@ -174,7 +184,6 @@ class MarketSentimentAnalyzer:
                 if title:
                     headlines.append(title)
             
-            headlines = [title] * len(headlines)
             
             print(f"Found {len(headlines)} articles")
             return self.analyze_news_headlines(headlines)

@@ -88,7 +88,7 @@ class AIPortfolioOptimizer:
             weights: Array of portfolio weights
         """
         # Annual return
-        portfolio_return = np.sum(self.returns.mean() * weights) * 252
+        portfolio_return = np.sum( self.returns.mean() * weights) * 252
         
         portfolio_volatility = np.sqrt(
             np.dot(weights.T, np.dot(self.returns.cov(), weights))
@@ -163,7 +163,12 @@ class AIPortfolioOptimizer:
         
         for i in range(n_portfolios):
             weights = np.random.random(n_assets)
+<<<<<<< HEAD
             weights /= n_assets
+=======
+            
+            weights /= np.sum(weights)
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
             
             weights_record.append(weights)
             
@@ -231,7 +236,12 @@ class AIPortfolioOptimizer:
         features['kurtosis'] = self.returns.kurtosis()
         
         market_proxy = self.returns.iloc[:, 0]
+<<<<<<< HEAD
         features['beta'] = self.returns.apply(lambda x: x.cov(market_proxy) / x.var())
+=======
+        
+        features['beta'] = self.returns.apply(lambda x: x.cov(market_proxy) / market_proxy.var())
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
         
         # Standardize features
         scaler = StandardScaler()
@@ -303,7 +313,12 @@ class AIPortfolioOptimizer:
         print(f"\nCalculating VaR (Confidence: {confidence_level*100}%, Horizon: {time_horizon} day(s))")
         
         portfolio_returns = (self.returns * self.optimal_weights).sum(axis=1)
+<<<<<<< HEAD
         var_historical = np.percentile(portfolio_returns, confidence_level*100)
+=======
+        
+        var_historical = np.percentile(portfolio_returns, (confidence_level)*100)
+>>>>>>> 01a52af94f048173ad522fc0d7bbbe2d148fdc63
         
         var_amount = self.investment_amount * var_historical * np.sqrt(time_horizon)
         
