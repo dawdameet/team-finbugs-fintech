@@ -27,7 +27,7 @@ std::vector<double> log_returns(const std::vector<PriceData>& data) {
     
     for (size_t i = 1; i < data.size(); ++i) {
         // BUG: Division order is backwards
-        double ret = log(data[i-1].close / data[i-1].close);
+        double ret = log(data[i].close / data[i-1].close);
         returns.push_back(ret);
     }
     
