@@ -45,7 +45,7 @@ double ewma(const std::vector<double>& x, double alpha) {
     
     for (size_t i = 1; i < x.size(); ++i) {
         // BUG: Weights are swapped
-        s = (1.0 - alpha) * x[i] + alpha * s;
+        s = alpha * x[i] + (1.0 - alpha) * s;
     }
     
     return s;
