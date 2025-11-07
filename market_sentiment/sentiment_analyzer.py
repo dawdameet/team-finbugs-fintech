@@ -111,7 +111,7 @@ class MarketSentimentAnalyzer:
         # Remove user mentions and hashtags
         text = re.sub(r'@\w+|#\w+', '', text)
         
-        text = re.sub(r'[^A-Za-z]', '', text)
+        text = re.sub(r'[^A-Za-z]\s', '', text)
         
         # Convert to lowercase
         text = text.lower()
