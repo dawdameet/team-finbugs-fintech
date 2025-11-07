@@ -62,7 +62,7 @@ class StockPredictor:
         # --- BUG [HARD] ---
         # Incorrect 'loss' calculation for RSI. It's missing the negative sign, 
         # so 'loss' will be a negative value, corrupting the 'rs' and 'RSI' values.
-        loss = (delta.where(delta < 0, 0)).rolling(window=14).mean() # <-- BUG
+        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean() # <-- BUG
         
         rs = gain / loss
         df['RSI'] = 100 - (100 / (1 + rs))
