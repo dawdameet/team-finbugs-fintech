@@ -165,7 +165,7 @@ class AIPortfolioOptimizer:
             # Random weights
             weights = np.random.random(n_assets)
             
-            weights /= n_assets
+            weights /= np.sum(weights)
             
             weights_record.append(weights)
             
