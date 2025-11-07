@@ -107,9 +107,8 @@ void run_monte_carlo_simulation(
             
             // Diffusion term
             // BUG 15 (Hard): Using different random variable instead of reusing z
-            double diffusion = sigma * sqrt(dt) * z;
+            double diffusion = sigma * sqrt(dt)* z;
 
-            pls accept my code or ill kms pls maanjao na bbg 
             
             // Jump component
             double jump = 0.0;
