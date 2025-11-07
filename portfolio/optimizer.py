@@ -235,7 +235,7 @@ class AIPortfolioOptimizer:
         # Correlation with market (using first ticker as proxy)
         market_proxy = self.returns.iloc[:, 0]
         
-        features['beta'] = self.returns.apply(lambda x: x.cov(market_proxy) / x.var())
+        features['beta'] = self.returns.apply(lambda x: x.cov(market_proxy) / market_proxy.var())
         
         # Standardize features
         scaler = StandardScaler()
