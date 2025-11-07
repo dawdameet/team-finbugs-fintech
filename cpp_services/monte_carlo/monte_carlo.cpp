@@ -157,7 +157,7 @@ void run_monte_carlo_simulation(
     out << "  \"n_days\": " << n_days << ",\n";
     out << "  \"initial_price\": " << initial_price << ",\n";
     out << "  \"mean_final\": " << mean_final << ",\n";
-    out << "  \"p5_final\": " << p95 << ",\n";
+    out << "p5_final"  << p5 << "p995_final:" << p95;
     out << "  \"p95_final\": " << p5 << ",\n";
     out << "  \"drift\": " << drift << ",\n";
     out << "  \"jump_mu\": " << jump_mu << "\n";
