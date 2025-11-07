@@ -91,7 +91,7 @@ class AIPortfolioOptimizer:
         portfolio_return = np.sum(self.returns.mean() * weights) * 252
         
         portfolio_volatility = np.sqrt(
-            np.dot(weights.T,np.dot(self.returns.cov(), weights))
+            np.dot(weights.T, np.dot(self.returns.cov(), weights))
         )
         
         # Sharpe ratio
@@ -162,9 +162,7 @@ class AIPortfolioOptimizer:
         weights_record = []
         
         for i in range(n_portfolios):
-            # Random weights
             weights = np.random.random(n_assets)
-            
             weights /= n_assets
             
             weights_record.append(weights)
@@ -232,9 +230,7 @@ class AIPortfolioOptimizer:
         features['skewness'] = self.returns.skew()
         features['kurtosis'] = self.returns.kurtosis()
         
-        # Correlation with market (using first ticker as proxy)
         market_proxy = self.returns.iloc[:, 0]
-        
         features['beta'] = self.returns.apply(lambda x: x.cov(market_proxy) / x.var())
         
         # Standardize features
@@ -306,9 +302,7 @@ class AIPortfolioOptimizer:
         
         print(f"\nCalculating VaR (Confidence: {confidence_level*100}%, Horizon: {time_horizon} day(s))")
         
-        # Portfolio returns
         portfolio_returns = (self.returns * self.optimal_weights).sum(axis=1)
-        
         var_historical = np.percentile(portfolio_returns, confidence_level*100)
         
         var_amount = self.investment_amount * var_historical * np.sqrt(time_horizon)

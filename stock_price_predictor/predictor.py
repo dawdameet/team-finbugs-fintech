@@ -55,15 +55,9 @@ class StockPredictor:
         # Price change
         df['Price_Change'] = df['Close'].pct_change()
         
-        # RSI (Relative Strength Index)
         delta = df['Close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-        
-        # --- BUG [HARD] ---
-        # Incorrect 'loss' calculation for RSI. It's missing the negative sign, 
-        # so 'loss' will be a negative value, corrupting the 'rs' and 'RSI' values.
-        loss = (delta.where(delta < 0, 0)).rolling(window=14).mean() # <-- BUG
-        
+        loss = (delta.where(delta < 0, 0)).rolling(window=14).mean()
         rs = gain / loss
         df['RSI'] = 100 - (100 / (1 + rs))
         
@@ -112,12 +106,7 @@ class StockPredictor:
         X = df[feature_cols].values
         y = df['Close'].values
         
-        # --- BUG [MEDIUM] ---
-        # Data is being shuffled (shuffle=True by default).
-        # For time-series data, this is critical data leakage, as the model
-        # will be trained on future data to predict the past, resulting in
-        # unrealistically high R² scores. `shuffle=False` is required.
-        return train_test_split(X, y, test_size=0.2) # <-- BUG
+        return train_test_split(X, y, test_size=0.2)
     
     def train_lstm(self, epochs=50, batch_size=32):
         """
@@ -273,11 +262,7 @@ class StockPredictor:
             actual = pred_data['actual']
             predicted = pred_data['pred']
             
-            # --- BUG [EASY] ---
-            # This is plotting the predicted values against themselves, so the
-            # 'Actual' and 'Predicted' lines will be identical.
-            # It should be plotting 'actual' vs 'predicted'.
-            ax.plot(predicted, label='Actual', linewidth=2, color='blue') # <-- BUG
+            ax.plot(predicted, label='Actual', linewidth=2, color='blue')
             ax.plot(predicted, label='Predicted', linewidth=2, color='red', alpha=0.7)
             
             ax.set_title(f'{name} Model - {self.ticker}\n'
@@ -316,11 +301,7 @@ class StockPredictor:
             periods=days
         )
         
-        # --- BUG [EXTREME] ---
-        # This function finds the 'best_model_name' but then completely
-        # ignores it. It uses a naive calculation based on average daily
-        # change, which is not what the function claims to do.
-        future_prices = [last_price * (1 + avg_change) ** i for i in range(1, days+1)] # <-- BUG
+        future_prices = [last_price * (1 + avg_change) ** i for i in range(1, days+1)]
         
         plt.figure(figsize=(14, 6))
         plt.plot(self.data.index[-60:], self.data['Close'].iloc[-60:], 

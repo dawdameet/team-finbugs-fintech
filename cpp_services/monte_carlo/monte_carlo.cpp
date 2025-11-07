@@ -1,7 +1,6 @@
 /*
  * monte_carlo.cpp
  * Monte Carlo simulation for stock price prediction with GARCH volatility modeling
- * Contains bugs for the bugathon
  */
 
 #include <iostream>
@@ -18,15 +17,10 @@ struct PriceData {
     double close;
 };
 
-/**
- * Calculate log returns from price data
- * BUG 13 (Medium): Inverted log return calculation
- */
 std::vector<double> log_returns(const std::vector<PriceData>& data) {
     std::vector<double> returns;
     
     for (size_t i = 1; i < data.size(); ++i) {
-        // BUG: Division order is backwards
         double ret = log(data[i-1].close / data[i].close);
         returns.push_back(ret);
     }
@@ -34,17 +28,12 @@ std::vector<double> log_returns(const std::vector<PriceData>& data) {
     return returns;
 }
 
-/**
- * Calculate Exponentially Weighted Moving Average
- * BUG 14 (Medium): Incorrect EWMA weighting formula
- */
 double ewma(const std::vector<double>& x, double alpha) {
     if (x.empty()) return 0.0;
     
     double s = x[0];
     
     for (size_t i = 1; i < x.size(); ++i) {
-        // BUG: Weights are swapped
         s = (1.0 - alpha) * x[i] + alpha * s;
     }
     
@@ -102,11 +91,8 @@ void run_monte_carlo_simulation(
             double z = nd(gen);
             double sigma = sqrt(variance);
             
-            // Update variance with GARCH(1,1)
             variance = omega + alpha_garch * sigma * sigma * z * z + beta_garch * variance;
             
-            // Diffusion term
-            // BUG 15 (Hard): Using different random variable instead of reusing z
             double diffusion = sigma * sqrt(dt) * nd(gen);
             
             // Jump component
@@ -144,8 +130,6 @@ void run_monte_carlo_simulation(
     std::cout << "Forecast horizon: " << n_days << " days\n";
     std::cout << "Initial price: $" << initial_price << "\n";
     std::cout << "Mean final price: $" << mean_final << "\n";
-    
-    // BUG 16 (Easy): Mis-mapped percentile output variables
     std::cout << "5th percentile: $" << p95 << "\n";
     std::cout << "95th percentile: $" << p5 << "\n";
     

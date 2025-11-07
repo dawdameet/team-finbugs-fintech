@@ -1,11 +1,9 @@
 /*
- * backtest_buggy.cpp
+ * backtest.cpp
  *
  * C++ implementation of the pairs trading backtest.
  * This file contains all the C++ logic (using std::vector, std::deque, etc.)
  * and exposes a single C-compatible function defined in backtest.h.
- *
- * This version contains several logical BUGS for the bugathon.
  */
 
 #include "backtest.h" // Include the C API header
@@ -139,22 +137,10 @@ extern "C" double run_backtest(int lookback_window,
     for (int i = 0; i < all_data.size(); ++i) {
         double priceA = all_data[i].priceA;
         double priceB = all_data[i].priceB;
-        double spread = priceA / priceB; // Our spread is the ratio
+        double spread = priceA / priceB;
 
-        // BUG 4 (Extreme): Lookahead bias.
-        // The current day's spread (`spread`) is added to the window *before*
-        // the mean and std_dev are calculated. This means the trading
-        // signal (upper/lower bounds) is being calculated using data from the
-        // *future* (i.e., the current time step).
-        // Correct logic would be to calculate mean/std_dev on the window
-        // *first*, then check for trades, and *then* add the current spread
-        // to the window for the *next* iteration.
         spreadWindow.push_back(spread);
         
-        // BUG 1 (Difficult): Off-by-one window logic.
-        // The window should only be popped *after* it exceeds the size,
-        // but this pops *as soon as* it hits the size.
-        // The window will never actually have LOOKBACK_WINDOW items for the calculation.
         if (spreadWindow.size() >= LOOKBACK_WINDOW) {
             spreadWindow.pop_front();
         }
@@ -177,42 +163,29 @@ extern "C" double run_backtest(int lookback_window,
 
         // --- 4. Trading Logic ---
 
-        // Entry Logic:
         if (position == 0) {
-            // BUG 2 (Medium): Flipped entry logic.
-            // This is a momentum strategy, NOT mean-reversion.
-            // It will buy when the spread is high and sell when it's low.
             if (spread < lowerBound) {
-                // Spread is too cheap. Let's... short it?
                 position = -1;
-                entryPrice = spread; // We enter at the current spread
+                entryPrice = spread;
                 std::cout << "Day " << i << ": LONG  Spread at " << spread
                           << " (Mean=" << mean << ", Lower=" << lowerBound << ")\n";
             } else if (spread > upperBound) {
-                // Spread is too expensive. Let's... long it?
                 position = 1;
                 entryPrice = spread;
                 std::cout << "Day " << i << ": SHORT Spread at " << spread
                           << " (Mean=" << mean << ", Upper=" << upperBound << ")\n";
             }
         }
-        // Exit Logic: (Reverted to the mean)
         else if (position == 1 && spread >= mean) {
-            // We were long, now exit
             double exitPrice = spread;
-            double tradePnl = ( entryPrice - exitPrice) / entryPrice; // PnL as %
+            double tradePnl = (entryPrice - exitPrice) / entryPrice;
             pnl += tradePnl;
             std::cout << "Day " << i << ": EXIT LONG at " << exitPrice
                       << " | Trade PnL: " << (tradePnl * 100.0) << "%\n";
             position = 0;
         } else if (position == -1 && spread <= mean) {
-            // We were short, now exit
             double exitPrice = spread;
-            
-            // BUG 3 (Easy): Inverted Short PnL calculation.
-            // This is the PnL logic for a LONG trade (exit - entry).
-            // For a SHORT trade, it should be (entry - exit).
-            double tradePnl = (exitPrice - entryPrice) / entryPrice; // PnL as %
+            double tradePnl = (exitPrice - entryPrice) / entryPrice;
             pnl += tradePnl;
             std::cout << "Day " << i << ": EXIT SHORT at " << exitPrice
                       << " | Trade PnL: " << (tradePnl * 100.0) << "%\n";

@@ -110,10 +110,9 @@ class MarketSentimentAnalyzer:
         text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
         # Remove user mentions and hashtags
         text = re.sub(r'@\w+|#\w+', '', text)
-        
         text = re.sub(r'[^A-Za-z]', '', text)
         
-        # Convert to lowercase
+        text = text.lower()
         text = text.lower()
         return text.strip()
     
@@ -127,7 +126,6 @@ class MarketSentimentAnalyzer:
         for text in texts:
             cleaned = self.clean_text(text)
             words = word_tokenize(cleaned)
-            
             all_words.extend([w for w in words if w in stop_words and len(w) > 3])
         
         return Counter(all_words).most_common(top_n)
@@ -170,7 +168,7 @@ class MarketSentimentAnalyzer:
                 return pd.DataFrame()
             
             headlines = []
-            title = '' # Initialize title variable
+            title = ''
             for article in news[:max_articles]:
                 title = article.get('title', '')
                 if title:
