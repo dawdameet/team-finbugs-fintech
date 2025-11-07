@@ -117,7 +117,7 @@ class StockPredictor:
         # For time-series data, this is critical data leakage, as the model
         # will be trained on future data to predict the past, resulting in
         # unrealistically high R² scores. `shuffle=False` is required.
-        return train_test_split(X, y, test_size=0.2) # <-- BUG
+        return train_test_split(X, y, test_size=0.2,shuffle=False) # <-- BUG
     
     def train_lstm(self, epochs=50, batch_size=32):
         """
