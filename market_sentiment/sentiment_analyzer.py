@@ -89,7 +89,7 @@ class MarketSentimentAnalyzer:
         scores = self.vader.polarity_scores(text)
         compound = scores['compound']
         
-        if compound >= 0.5:
+        if compound >= 0.05:
             sentiment = 'positive'
         elif compound <= -0.05:
             sentiment = 'negative'
