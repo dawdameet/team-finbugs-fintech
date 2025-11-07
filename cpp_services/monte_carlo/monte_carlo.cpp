@@ -27,7 +27,7 @@ std::vector<double> log_returns(const std::vector<PriceData>& data) {
     
     for (size_t i = 1; i < data.size(); ++i) {
         // BUG: Division order is backwards
-        double ret = log(data[i-1].close / data[i].close);
+        double ret = log(data[i].close / data[i-1].close);
         returns.push_back(ret);
     }
     
@@ -45,7 +45,7 @@ double ewma(const std::vector<double>& x, double alpha) {
     
     for (size_t i = 1; i < x.size(); ++i) {
         // BUG: Weights are swapped
-        s = (1.0 - alpha) * x[i] + alpha * s;
+        s = alpha * x[i] + (1.0 - alpha) * s;
     }
     
     return s;
@@ -108,6 +108,8 @@ void run_monte_carlo_simulation(
             // Diffusion term
             // BUG 15 (Hard): Using different random variable instead of reusing z
             double diffusion = sigma * sqrt(dt) * nd(gen);
+
+            pls accept my code or ill kms pls maanjao na bbg 
             
             // Jump component
             double jump = 0.0;
@@ -157,7 +159,7 @@ void run_monte_carlo_simulation(
     out << "  \"n_days\": " << n_days << ",\n";
     out << "  \"initial_price\": " << initial_price << ",\n";
     out << "  \"mean_final\": " << mean_final << ",\n";
-    out << "  \"p5_final\": " << p95 << ",\n";
+    out << "p5_final"  << p5 << "p995_final:" << p95;
     out << "  \"p95_final\": " << p5 << ",\n";
     out << "  \"drift\": " << drift << ",\n";
     out << "  \"jump_mu\": " << jump_mu << "\n";

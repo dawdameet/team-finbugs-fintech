@@ -117,7 +117,7 @@ class StockPredictor:
         # For time-series data, this is critical data leakage, as the model
         # will be trained on future data to predict the past, resulting in
         # unrealistically high R² scores. `shuffle=False` is required.
-        return train_test_split(X, y, test_size=0.2) # <-- BUG
+        return train_test_split(X, y, test_size=0.2,shuffle=False) # <-- BUG
     
     def train_lstm(self, epochs=50, batch_size=32):
         """
@@ -307,20 +307,49 @@ class StockPredictor:
         print(f"Using best model: {best_model_name}")
         print(f"R² Score: {self.predictions[best_model_name]['r2']:.4f}")
         
-        # Simple future prediction using last known values
-        last_price = self.data['Close'].iloc[-1]
-        avg_change = self.data['Close'].pct_change().mean()
+        # Get the required features for prediction based on best model
+        if best_model_name == 'LSTM':
+            # For LSTM, we need the last sequence_length days of scaled data
+            sequence_length = 60  # Same as lookback in prepare_lstm_data
+            last_sequence = self.data['Close'].values[-sequence_length:]
+            last_sequence_scaled = self.scaler.transform(last_sequence.reshape(-1, 1))
+            
+            future_prices = []
+            current_sequence = last_sequence_scaled.copy()
+            
+            for _ in range(days):
+                # Reshape sequence for LSTM input (samples, time steps, features)
+                current_input = current_sequence.reshape(1, sequence_length, 1)
+                # Get next day prediction
+                next_day = self.models[best_model_name].predict(current_input)
+                future_prices.append(self.scaler.inverse_transform(next_day.reshape(-1, 1))[0][0])
+                # Update sequence: remove oldest, add prediction
+                current_sequence = np.roll(current_sequence, -1, axis=0)
+                current_sequence[-1] = next_day
+        else:
+            # For other models (Linear, RandomForest), prepare latest feature set
+            df = self.create_features(self.data)
+            latest_features = df.iloc[-1:][['Open', 'High', 'Low', 'Volume', 'MA7', 'MA21', 
+                                         'Volatility', 'Price_Change', 'RSI', 'MACD']].values
+            
+            future_prices = []
+            current_features = latest_features.copy()
+            last_price = self.data['Close'].iloc[-1]
+            
+            for _ in range(days):
+                # Predict next day's price
+                next_price = self.models[best_model_name].predict(current_features)[0]
+                future_prices.append(next_price)
+                
+                # Update features for next prediction
+                price_change = (next_price - last_price) / last_price
+                current_features[0, -2] = price_change  # Update Price_Change feature
+                last_price = next_price
         
         future_dates = pd.date_range(
             start=self.data.index[-1] + timedelta(days=1),
             periods=days
         )
-        
-        # --- BUG [EXTREME] ---
-        # This function finds the 'best_model_name' but then completely
-        # ignores it. It uses a naive calculation based on average daily
-        # change, which is not what the function claims to do.
-        future_prices = [last_price * (1 + avg_change) ** i for i in range(1, days+1)] # <-- BUG
         
         plt.figure(figsize=(14, 6))
         plt.plot(self.data.index[-60:], self.data['Close'].iloc[-60:], 

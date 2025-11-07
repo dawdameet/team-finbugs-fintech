@@ -88,10 +88,10 @@ class AIPortfolioOptimizer:
             weights: Array of portfolio weights
         """
         # Annual return
-        portfolio_return = np.sum(self.returns.mean() * weights) * 252
+        portfolio_return = np.sum( self.returns.mean() * weights) * 252
         
         portfolio_volatility = np.sqrt(
-            np.dot(weights.T,np.dot(self.returns.cov() *252, weights))
+            np.dot(weights.T,np.dot(self.returns.cov(), weights))
         )
         
         # Sharpe ratio
