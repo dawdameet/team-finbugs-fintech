@@ -176,7 +176,6 @@ class MarketSentimentAnalyzer:
                 if title:
                     headlines.append(title)
             
-            headlines = [title] * len(headlines)
             
             print(f"Found {len(headlines)} articles")
             return self.analyze_news_headlines(headlines)
