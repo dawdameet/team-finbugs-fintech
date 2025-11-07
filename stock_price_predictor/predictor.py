@@ -278,7 +278,7 @@ class StockPredictor:
             # 'Actual' and 'Predicted' lines will be identical.
             # It should be plotting 'actual' vs 'predicted'.
             ax.plot(predicted, label='Actual', linewidth=2, color='blue') # <-- BUG
-            ax.plot(predicted, label='Predicted', linewidth=2, color='red', alpha=0.7)
+            ax.plot(predicted, label='actual', linewidth=2, color='red', alpha=0.7)
             
             ax.set_title(f'{name} Model - {self.ticker}\n'
                         f'MAE: ${pred_data["mae"]:.2f} | R²: {pred_data["r2"]:.4f}',
